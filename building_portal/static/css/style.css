@@ -1,0 +1,49 @@
+body{
+    color:black;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 1rem;
+    padding: 1rem;
+    width: 30em;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 1px;
+}
+.container:hover{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 1rem;
+    width: 30em;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 1px;
+    box-shadow: 3px 3px 3px 3px #000000;
+}
+
+.container > span {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+.btn{
+    margin-top: 1rem;
+}
+
+#building_pic{
+    border-radius: 50%;
+    width: 20rem;
+    height: 20rem;
+}
+.description{
+    width: 30rem;
+}
+.toast{
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+}

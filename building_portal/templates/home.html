@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Home Page
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="profile_pic">
+        <img id = "building_pic" src="../static/images/building.jpg">
+    </div>
+    <div class="description">
+        <h5>Pushpa Kunj, Wadala West</h5>
+    </div>
+    <div>
+        <ul>
+            <li id="address">Address: Plot No 192, Wadala West, Opposite Wadala Krishna Mandir, Mumbai: 400031</li>
+            <li id="landlord">Landlord: Shrimati Deena Baldota</li>
+            <li id="tenant_representative">Tenant Representative: Dr. Harish Goshar</li>
+            <li id="treasurer">Treasurer: Shri Bharat Mehta</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    const active_tab = document.querySelector("#home_page");
+    active_tab.classList.add("active");
+</script>
+{% endblock %}
