@@ -4,6 +4,23 @@
 {% endblock %}
 {% block content %}
     <div class="employee-table">
-        {{employee_table|safe}}
+        <table class="table table-hover table-light">
+            <thead>
+                <tr>
+                    <!-- Your Columns HERE -->
+                    <th scope="col">Name</th>
+                    <th scope="col">Designation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Your rows inside the table HERE: -->
+                {% for _,employee in employee_table.iterrows() %}
+                    <tr>
+                        <td>{{ employee['Employee_Name'] }}</td>
+                        <td>{{ employee['Designation'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}

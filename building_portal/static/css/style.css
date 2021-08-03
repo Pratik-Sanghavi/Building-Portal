@@ -66,3 +66,11 @@ body{
     border-color: #000000;
     border-width: 1px;
 }
+
+.employee-table{
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 1rem;
+    width: 50rem;
+}
