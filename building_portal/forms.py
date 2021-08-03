@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from building_portal.model import User,Flat
+import phonenumbers
+
 class RegisterForm(FlaskForm):
     # Naming below function in the given way is very important
     def validate_username(self, username_to_check):
@@ -24,7 +26,17 @@ class RegisterForm(FlaskForm):
             if admin_exists:
                 raise ValidationError(f'Administrator already exists! Please check with current administrator {admin_exists.user_name}')
 
+    def validate_contact(self, phone_number_to_check):
+        try:
+            p = phonenumbers.parse(phone_number_to_check.data)
+            if not phonenumbers.is_valid_number(p):
+                raise ValueError()
+        except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
+            raise ValidationError('Invalid phone number')
+
+    name = StringField(label='Full Name', validators=[Length(min=2, max=60),DataRequired()])
     username = StringField(label='User Name', validators=[Length(min=2, max=30),DataRequired()])
+    contact_no = StringField(label='Contact Number', validators=[Length(min=10, max=10),DataRequired()])
     email_address = StringField(label='Email Address', validators=[Email(),DataRequired()])
     admin_user = BooleanField(label="Admin User (Check only if you are the building representative)")
     flat_no = IntegerField(label = "Flat Number", validators=[DataRequired()])

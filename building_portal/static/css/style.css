@@ -12,6 +12,7 @@ body{
     border-style: solid;
     border-color: #000000;
     border-width: 1px;
+    border-radius: 5%;
 }
 .container:hover{
     display: flex;
@@ -23,13 +24,13 @@ body{
     border-color: #000000;
     border-width: 1px;
     box-shadow: 3px 3px 3px 3px #000000;
+    border-radius: 5%;
 }
 
 .container > span {
-    display: flex;
-    justify-content: center;
     padding: 1rem;
 }
+
 .btn{
     margin-top: 1rem;
 }
@@ -46,4 +47,22 @@ body{
     display: flex;
     align-items: center;
     margin: 1rem;
+}
+
+.members-table{
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 1rem;
+    width: 50rem;
+}
+
+.table{
+    color: black;
+    margin-top: 1rem;
+    padding: 1rem;
+    width: 50em;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 1px;
 }
