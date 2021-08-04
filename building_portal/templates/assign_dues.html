@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}
+    Assign Dues
+{% endblock %}
+{% block content %}
+{% if current_user.is_authenticated and current_user.admin_user %}
+
+<div class = "sticky-button" style="overflow: visible;">
+    <button class="btn btn-primary btn-md" data-target="#create_dues" data-toggle="modal" style="border-radius: 50%; margin-left: 1rem; font-size: 1rem; width: 3rem; height: 3rem">+</button>
+</div>
+<div class="modal" id="create_dues" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Assign Payment</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" class = "form-register" style="color:black">
+                {{form.hidden_tag()}}
+                <span>{{ form.amount.label() }}
+                {{ form.amount(class="form-control",placeholder="Full Name") }}</span>
+                
+                <span>{{form.purpose.label()}}
+                {{form.purpose(class="form-control",placeholder="User Name")}}</span>   
+                <br>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <hr>
+            {{form.submit(class="btn btn-md btn-block btn-primary")}}
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+{% block script %}
+<script>
+
+</script>
+{% endblock %}

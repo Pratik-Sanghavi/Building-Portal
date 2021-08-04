@@ -1,7 +1,7 @@
 from building_portal import app
 from flask import redirect, render_template,flash, url_for
 from building_portal.model import Flat, User
-from building_portal.forms import RegisterForm, LoginForm
+from building_portal.forms import RegisterForm, LoginForm, DuesForm
 from building_portal import db
 from datetime import datetime
 from flask_login import login_user
@@ -72,3 +72,8 @@ def employee_page():
     df = pd.read_csv('./Data/Employee_Data.csv')
     df = df[['Employee_Name','Designation']]
     return render_template('employees.html', employee_table = df)
+
+@app.route('/assign_dues')
+def assign_dues_page():
+    form=DuesForm()
+    return render_template('assign_dues.html', form=form)

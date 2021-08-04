@@ -23,7 +23,7 @@ body{
     border-style: solid;
     border-color: #000000;
     border-width: 1px;
-    box-shadow: 3px 3px 3px 3px #000000;
+    box-shadow: 3px 3px 3px 3px #777777;
     border-radius: 5%;
 }
 
@@ -54,23 +54,35 @@ body{
     justify-content: center;
     margin-top: 1rem;
     padding: 1rem;
-    width: 50rem;
 }
 
-.table{
-    color: black;
-    margin-top: 1rem;
-    padding: 1rem;
-    width: 50em;
+.employee-wrapper {
+    margin-left: 3rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.employee-wrapper > div{
+    margin-top: 2rem;
     border-style: solid;
+    width: 25em;
     border-color: #000000;
     border-width: 1px;
+    padding:0.5rem;
+    margin-right: 3rem;
+    justify-content: center;
+}
+.employee-wrapper >div:hover{
+    box-shadow: 3px 3px 3px 3px #777777;
 }
 
-.employee-table{
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-    padding: 1rem;
-    width: 50rem;
+.employee-wrapper>div>ul{
+    margin-top: 2rem;
+}
+
+.sticky-button{
+    position: -webkit-sticky;
+    position: sticky;
+    top: 20px;
 }
