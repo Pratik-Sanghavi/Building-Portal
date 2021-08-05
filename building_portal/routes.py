@@ -1,4 +1,4 @@
-from building_portal import app
+from building_portal import app, sender_id, sender_password
 from flask import redirect, render_template,flash, url_for
 from building_portal.model import Flat, User
 from building_portal.forms import RegisterForm, LoginForm, DuesForm
@@ -64,7 +64,6 @@ def member_page():
     flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
     user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
     user_info = user_info[['Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
-    # print(user_info)
     return render_template('members.html', member_table = user_info)
 
 @app.route('/employees')
