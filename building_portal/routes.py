@@ -76,3 +76,8 @@ def employee_page():
 def assign_dues_page():
     form=DuesForm()
     return render_template('assign_dues.html', form=form)
+
+@app.route('/events')
+def events_page():
+    form=DuesForm()
+    return render_template('events.html', form=form)

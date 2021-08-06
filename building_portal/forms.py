@@ -54,3 +54,8 @@ class DuesForm(FlaskForm):
     amount = FloatField(label='Amount', validators=[DataRequired()])
     purpose = StringField(label='Purpose', validators=[Length(min=2, max=100),DataRequired()])
     submit = SubmitField(label='Assign Payment')
+
+class EventsForm(FlaskForm):
+    title = StringField(label="Title", validators=[Length(min=2, max=200), DataRequired()])
+    purpose = StringField(label="Purpose", validators=[Length(min=2, max=400), DataRequired()])
+    submit = SubmitField(label='Create Event')

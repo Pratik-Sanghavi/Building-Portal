@@ -50,3 +50,11 @@ class Dues(db.Model):
     created_on = db.Column(db.DateTime, nullable=False)
     expires_on = db.Column(db.DateTime, nullable=False)
     due_to_user = db.Column(db.Integer(),db.ForeignKey('user.id'))
+
+class Events(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(length=200),nullable=False,unique=True)
+    purpose = db.Column(db.String(length=400),nullable=False,unique=True)
+    start_event = db.Column(db.DateTime, nullable=False, unique=True)
+    end_event = db.Column(db.DateTime, nullable=False, unique=True)
+    url = db.Column(db.String(length=100),nullable=False,unique=True)

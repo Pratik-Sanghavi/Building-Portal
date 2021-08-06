@@ -4,7 +4,6 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 from ics import Calendar, Event
-from ics.parse import ContentLine
 
 class Email_Stakeholders():
     def send_email(Date, Time_Start, duration, To_Addresses, Subject, Body, From_Address, From_Password):
