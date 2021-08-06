@@ -6,13 +6,14 @@ from email import encoders
 from ics import Calendar, Event
 
 class Email_Stakeholders():
-    def send_email(Date, Time_Start, duration, To_Addresses, Subject, Body, From_Address, From_Password):
+    def send_email_with_invite(Date_Start, Time_Start, Date_End, Time_End, duration, To_Addresses, Subject, Body, Url, From_Address, From_Password):
         c = Calendar()
         e = Event()
         e.name = Subject
-        e.begin = str(Date) + str(Time_Start)
-        e.duration = {"hours": duration}
-        e.url("www.google.com")
+        e.description = str(Body) + "\nMeeting Link:\n" + str(Url)
+        e.begin = str(Date_Start) + str(Time_Start)
+        e.end = str(Date_End) + str(Time_End)
+        e.url(str(Url))
         c.events.add(e)
         with open('./Invite/invite.ics', 'w') as f:
             f.write(str(c))
@@ -29,7 +30,7 @@ class Email_Stakeholders():
         msg['Subject'] = Subject
 
         # string to store the body of the mail
-        body = Body
+        body = str(Body) + "\nMeeting Link:\n" + str(Url)
 
         # attach the body with the msg instance
         msg.attach(MIMEText(body, 'plain'))
