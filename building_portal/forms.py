@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, FloatField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, FloatField, SelectField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from building_portal.model import User,Flat
 import phonenumbers
@@ -53,6 +53,7 @@ class LoginForm(FlaskForm):
 class DuesForm(FlaskForm):
     amount = FloatField(label='Amount', validators=[DataRequired()])
     purpose = StringField(label='Purpose', validators=[Length(min=2, max=100),DataRequired()])
+    created_by = SelectField(u'Tenant', coerce = int)
     submit = SubmitField(label='Assign Payment')
 
 class EventsForm(FlaskForm):

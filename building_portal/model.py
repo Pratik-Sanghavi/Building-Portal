@@ -22,7 +22,7 @@ class User(db.Model, UserMixin):
     flat_no = db.relationship('Flat', backref='owned_user',lazy=True)
     dues_for_user = db.relationship('Dues', backref='dues_for_user',lazy=True)
     events_by_user = db.relationship('Events', backref='events_by_user',lazy=True)
-    maintenance_by_user = db.relationship('Maintenance_History', backref='maintenance_by_user',lazy=True)
+    maintenance_by_user = db.relationship('Maintenance', backref='maintenance_by_user',lazy=True)
 
     @property
     def password(self):
@@ -62,7 +62,7 @@ class Events(db.Model):
     url = db.Column(db.String(length=100),nullable=False)
     created_by = db.Column(db.Integer(),db.ForeignKey('user.id'))
 
-class Maintenance_History(db.Model):
+class Maintenance(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String(length=150),nullable=False)
     work_undertaken = db.Column(db.String(length=700),nullable=False)
