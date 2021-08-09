@@ -46,11 +46,11 @@ class Flat(db.Model):
 
 class Dues(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    amount = db.Column(db.Float(),nullable=False,unique=False)
+    amount = db.Column(db.DECIMAL(10,2),nullable=False,unique=False)
     purpose = db.Column(db.String(length=100),nullable=False,unique=False)
     status = db.Column(db.Boolean(), nullable = False, unique = False, default=False)
     created_on = db.Column(db.DateTime, nullable=False)
-    expires_on = db.Column(db.DateTime, nullable=False)
+    created_by = db.Column(db.Integer(), nullable = False)
     due_to_user = db.Column(db.Integer(),db.ForeignKey('user.id'))
 
 class Events(db.Model):
@@ -66,5 +66,5 @@ class Maintenance(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String(length=150),nullable=False)
     work_undertaken = db.Column(db.String(length=700),nullable=False)
-    estimated_cost = db.Column(db.Float(),nullable=False,unique=False)
+    estimated_cost = db.Column(db.DECIMAL(10,2),nullable=False,unique=False)
     undertaken_by = db.Column(db.Integer(),db.ForeignKey('user.id'))

@@ -1,10 +1,11 @@
 from building_portal import app, sender_id, sender_password
 from flask import redirect, render_template,flash, url_for
-from building_portal.model import Flat, User
+from building_portal.model import Dues, Flat, User
 from building_portal.forms import RegisterForm, LoginForm, DuesForm
 from building_portal import db
 from datetime import datetime
-from flask_login import login_user
+from flask_login import login_user, logout_user, current_user
+from flask_security import login_required
 import pandas as pd
 from building_portal.load_functions import db_to_dataframe
 
@@ -53,7 +54,16 @@ def login_page():
             pass    
     return render_template('login.html', form=form)
 
+@app.route('/logout')
+@login_required
+def logout_page():
+    logout_user()
+    flash("You have been logged out successfully!", category='info')
+    return redirect(url_for('home'))
+    
+
 @app.route('/members')
+@login_required
 def member_page():
     users = User.query.all()
     flats = Flat.query.all()
@@ -67,17 +77,35 @@ def member_page():
     return render_template('members.html', member_table = user_info)
 
 @app.route('/employees')
+@login_required
 def employee_page():
     df = pd.read_csv('./Data/Employee_Data.csv')
     df = df[['Employee_Name','Designation']]
     return render_template('employees.html', employee_table = df)
 
-@app.route('/assign_dues')
+@app.route('/assign_dues', methods=['GET','POST'])
+@login_required
 def assign_dues_page():
     form=DuesForm()
+    user_list = [(u.id, u.name) for u in User.query.all()]
+    form.due_to_user.choices = user_list
+    if form.validate_on_submit():
+        print("Okay")
+        due_to_create = Dues(amount = form.amount.data, purpose = form.purpose.data, status = False, created_on = datetime.now(), created_by = current_user.id, due_to_user = form.due_to_user.data)
+        db.session.add(due_to_create)
+        db.session.commit()
+        db.session.commit()
+        return redirect(url_for('assign_dues_page'))
+    else:
+        print(f"Errors: {form.errors}")
+    if form.errors!={}: # if there are errors from validations
+        for err_msg in form.errors.values():
+            flash(f'There was an error with creating a due: {err_msg}', category='danger')
+            print(f'There was an error with creating a due: {err_msg}')
     return render_template('assign_dues.html', form=form)
 
 @app.route('/events')
+@login_required
 def events_page():
     form=DuesForm()
     return render_template('events.html', form=form)
