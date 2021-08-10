@@ -32,11 +32,13 @@
                         {% if current_user.is_authenticated and current_user.admin_user %}
                             {% if member['Administrator']==False %}
                                 <td>
-                                    <button class="btn btn-outline btn-success">Make Admin</button>
+                                    <form action="" method="POST">
+                                        <button name="admin" value="{{member['ID']}}" class="btn btn-sm btn-outline btn-success" style="margin-top:0rem">Make Admin</button>
+                                    </form>
                                 </td>
                             {% else %}
                                 <td>
-                                    <button class="btn btn-outline btn-sm", style="background-color: gray; margin-top:0rem">Admin</button>
+                                    <button class="btn btn-outline btn-sm" style="background-color: gray; margin-top:0rem">Admin</button>
                                 </td>
                             {% endif %}
                         {% endif %}

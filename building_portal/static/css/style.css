@@ -86,3 +86,10 @@ body{
     position: sticky;
     top: 20px;
 }
+
+.dues-table{
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 1rem;
+}

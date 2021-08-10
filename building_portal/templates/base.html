@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/fontawesome.min.css" integrity="sha384-wESLQ85D6gbsF459vf1CiZ2+rr+CsxRY0RpiF1tLlQpDnAgg6rwdsUF1+Ics2bni" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>
         {% block title %}
@@ -31,6 +32,10 @@
                     <li><a class="dropdown-item" href="{{ url_for('member_page') }}">Members</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{{ url_for('employee_page') }}">Employees</a></li>
+                    {% if current_user.is_authenticated and current_user.admin_user %}
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="#">Approve New Members</a></li>
+                    {% endif %}
                 </ul>
               </li>
               <li class="nav-item">
@@ -41,12 +46,12 @@
                   Payments
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#">Due to me</a></li>
+                    <li><a class="dropdown-item" href="{{url_for('my_dues_page')}}">Due to me</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Payment History</a></li>
+                    <li><a class="dropdown-item" href="{{url_for('payment_history_page')}}">Payment History</a></li>
                     {% if current_user.is_authenticated and current_user.admin_user %}
                       <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="{{url_for('assign_dues_page')}}">Assign Dues</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('assign_dues_page')}}">Assign and Manage Dues</a></li>
                     {% endif %}
                 </ul>
               </li>
@@ -102,6 +107,7 @@
       {% block content %}
       {% endblock %}
       <!-- Optional JavaScript --> 
+      <script src='https://kit.fontawesome.com/a076d05399.js'></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>

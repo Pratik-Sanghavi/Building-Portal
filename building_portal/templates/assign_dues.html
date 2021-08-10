@@ -4,6 +4,51 @@
 {% endblock %}
 {% block content %}
 {% if current_user.is_authenticated and current_user.admin_user %}
+<div class="dues-table">
+  <table class="table table-hover table-light">
+      <thead>
+          <tr>
+              <!-- Your Columns HERE -->
+
+              <th scope="col">Tenant</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Purpose</th>
+              <th scope="col">Status</th>
+              <th scope="col">Created On</th>
+              <th scope="col">Assigner</th>
+              <th scope="col">Update Payment Status</th>
+          </tr>
+      </thead>
+      <tbody>
+          <!-- Your rows inside the table HERE: -->
+          {% for _,due in dues_table.iterrows() %}
+              <tr>
+                  <td>{{ due['Assignee'] }}</td>
+                  <td>{{ due['Amount'] }}</td>
+                  <td>{{ due['Purpose'] }}</td>
+                  <td>{{ due['Status'] }}</td>
+                  <td>{{ due['Created_On'] }}</td>
+                  <td>{{ due['Assigner'] }}<sup>Admin</sup></td>
+                  {% if due['Status']==False %}
+                    <td>
+                        <form action="" method="POST">
+                          <button name="check" value="{{due['ID']}}" class="btn btn-sm btn-outline btn-success" style="margin-top:0rem"><i class="fas fa-check"></i></button>
+                          <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
+                        </form>
+                    </td>
+                {% else %}
+                    <td>
+                      <form action="" method="POST">
+                        <button name="cross" value="{{due['ID']}}" class="btn btn-outline btn-sm" style="background-color: gray; margin-top:0rem"><i class="fas fa-times"></i></button>
+                        <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
+                      </form>
+                    </td>
+                  {% endif %}
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
 <div class = "sticky-button" style="overflow: visible;">
     <button id = "modal-btn" class="btn btn-primary btn-md" data-target="#create_dues" data-toggle="modal" style="position: fixed; bottom: 2rem; right: 2rem; border-radius: 50%; margin-left: 1rem; font-size: 1rem; width: 3rem; height: 3rem">+</button>
 </div>
@@ -17,24 +62,26 @@
           </button>
         </div>
         <div class="modal-body">
-            <form action="" method="POST" class = "form-register" style="color:black">
-                {{form.hidden_tag()}}                    
-                    <span>{{form.amount.label()}}
-                    {{form.amount(class="form-control",placeholder="Amount")}}</span>
-                    
-                    <span>{{form.purpose.label()}}
-                    {{form.purpose(class="form-control",placeholder="Why are these dues being levied on the user")}}</span>
-                    <br>
-                    <span>
-                      {{form.due_to_user.label()}}
-                      {{form.due_to_user}}
-                    </span>
-            </form>
+          <form method="POST" class = "form-register" style="color:black">
+            {{form.hidden_tag()}}
+            <br>                    
+            <span>{{form.amount.label()}}
+            {{form.amount(class="form-control",placeholder="Amount")}}</span>
+            
+            <span>{{form.purpose.label()}}
+            {{form.purpose(class="form-control",placeholder="Why are these dues being levied on the user")}}</span>
+            
+            <br>
+            <span>
+              {{form.due_to_user.label()}}
+              {{form.due_to_user}}
+            </span>
         </div>
         <div class="modal-footer">
             <hr>
             {{form.submit(class="btn btn-md btn-block btn-primary")}}
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-md btn-secondary" data-dismiss="modal">Close</button>
+          </form>
         </div>
       </div>
     </div>

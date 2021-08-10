@@ -1,5 +1,5 @@
 from building_portal import app, sender_id, sender_password
-from flask import redirect, render_template,flash, url_for
+from flask import redirect, render_template,flash, url_for, request
 from building_portal.model import Dues, Flat, User
 from building_portal.forms import RegisterForm, LoginForm, DuesForm
 from building_portal import db
@@ -62,7 +62,7 @@ def logout_page():
     return redirect(url_for('home'))
     
 
-@app.route('/members')
+@app.route('/members', methods=['GET','POST'])
 @login_required
 def member_page():
     users = User.query.all()
@@ -73,7 +73,19 @@ def member_page():
     user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
     flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
     user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
-    user_info = user_info[['Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
+    print(user_info.columns)
+    user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
+
+    if request.method == "POST":
+        for i in range(user_info.shape[0]):
+            data1 = request.form.get('admin')
+            
+            if data1 == str(list(user_info['ID'])[i]):
+                user_to_change = User.query.filter_by(id=data1).first()
+                user_to_change.admin_user = True
+                current_user.admin_user = False
+                db.session.commit()
+
     return render_template('members.html', member_table = user_info)
 
 @app.route('/employees')
@@ -89,23 +101,94 @@ def assign_dues_page():
     form=DuesForm()
     user_list = [(u.id, u.name) for u in User.query.all()]
     form.due_to_user.choices = user_list
+
     if form.validate_on_submit():
-        print("Okay")
         due_to_create = Dues(amount = form.amount.data, purpose = form.purpose.data, status = False, created_on = datetime.now(), created_by = current_user.id, due_to_user = form.due_to_user.data)
         db.session.add(due_to_create)
         db.session.commit()
         db.session.commit()
         return redirect(url_for('assign_dues_page'))
-    else:
-        print(f"Errors: {form.errors}")
-    if form.errors!={}: # if there are errors from validations
-        for err_msg in form.errors.values():
-            flash(f'There was an error with creating a due: {err_msg}', category='danger')
-            print(f'There was an error with creating a due: {err_msg}')
-    return render_template('assign_dues.html', form=form)
+    # if form.errors!={}: # if there are errors from validations
+        # for err_msg in form.errors.values():
+            # flash(f'There was an error with creating a due: {err_msg}', category='danger')
+    
+    dues = Dues.query.all()
+    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+
+    if request.method == "POST":
+        for i in range(dues_df.shape[0]):
+            data1 = request.form.get('check')
+            data2 = request.form.get('trash')
+            data3 = request.form.get('cross')
+            
+            if data1 == str(list(dues_df['ID'])[i]):
+                due_to_change = Dues.query.filter_by(id=data1).first()
+                due_to_change.status = True
+                db.session.commit()
+            elif data2 == str(list(dues_df['ID'])[i]):
+                due_to_change = Dues.query.filter_by(id=data2).delete()
+                db.session.commit()
+            elif data3 == str(list(dues_df['ID'])[i]):
+                due_to_change = Dues.query.filter_by(id=data3).first()
+                due_to_change.status = False
+                db.session.commit()
+            else:
+                pass # unknown
+    users = User.query.all()
+    dues = Dues.query.all()
+    user_cols = ['id','name','email_address','contact_no','admin_user']
+    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+    dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
+    dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
+    dues_info = dues_info[['ID_x','Amount','Purpose','Status','Created_On','Name_x','Name_y']]
+    dues_info.columns = ['ID','Amount','Purpose','Status','Created_On','Assignee','Assigner']
+    dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
+    return render_template('assign_dues.html', form=form, dues_table = dues_info)
+
+@app.route('/my_dues')
+@login_required
+def my_dues_page():
+    users = User.query.all()
+    dues = Dues.query.all()
+    user_cols = ['id','name','email_address','contact_no','admin_user']
+    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+    dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
+    dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
+    dues_info = dues_info[dues_info['Due_To_User'] == current_user.id]
+    dues_info = dues_info[['Amount','Purpose','Status','Created_On','Name_x','Name_y']]
+    dues_info.columns = ['Amount','Purpose','Status','Created_On','Assignee','Assigner']
+    dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
+    return render_template('my_dues.html', dues_table = dues_info)
+
+@app.route('/payment_history')
+@login_required
+def payment_history_page():
+    users = User.query.all()
+    dues = Dues.query.all()
+    user_cols = ['id','name','email_address','contact_no','admin_user']
+    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+    dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
+    dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
+    dues_info = dues_info[dues_info['Due_To_User'] == current_user.id]
+    dues_info = dues_info[dues_info['Status'] == True]
+    dues_info = dues_info[['Amount','Purpose','Status','Created_On','Name_x','Name_y']]
+    dues_info.columns = ['Amount','Purpose','Status','Created_On','Assignee','Assigner']
+    dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
+    return render_template('payment_history.html', dues_table = dues_info)
 
 @app.route('/events')
 @login_required
 def events_page():
     form=DuesForm()
     return render_template('events.html', form=form)
+
