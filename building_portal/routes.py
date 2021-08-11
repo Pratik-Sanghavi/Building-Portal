@@ -52,7 +52,7 @@ def login_page():
             return redirect(url_for('home'))
         else:
             flash('Username and password do not match! Please check your login credentials or contact admin.', category='danger')
-            pass    
+                
     return render_template('login.html', form=form)
 
 @app.route('/logout')
@@ -66,6 +66,18 @@ def logout_page():
 @app.route('/members', methods=['GET','POST'])
 @login_required
 def member_page():
+    users = [user.id for user in User.query.all()]
+
+    if request.method == "POST":
+        for i in range(len(users)):
+            data1 = request.form.get('admin')
+            
+            if data1 == str(users[i]):
+                user_to_change = User.query.filter_by(id=data1).first()
+                user_to_change.admin_user = True
+                current_user.admin_user = False
+                db.session.commit()
+
     users = User.query.all()
     flats = Flat.query.all()
     user_cols = ['id','name','email_address','contact_no','admin_user']
@@ -76,16 +88,6 @@ def member_page():
     user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
     
     user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
-
-    if request.method == "POST":
-        for i in range(user_info.shape[0]):
-            data1 = request.form.get('admin')
-            
-            if data1 == str(list(user_info['ID'])[i]):
-                user_to_change = User.query.filter_by(id=data1).first()
-                user_to_change.admin_user = True
-                current_user.admin_user = False
-                db.session.commit()
 
     return render_template('members.html', member_table = user_info)
 
@@ -113,24 +115,24 @@ def assign_dues_page():
         # for err_msg in form.errors.values():
             # flash(f'There was an error with creating a due: {err_msg}', category='danger')
     
-    dues = Dues.query.all()
-    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
-    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+    dues = [due.id for due in Dues.query.all()]
+    # dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+    # dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
 
     if request.method == "POST":
-        for i in range(dues_df.shape[0]):
+        for i in range(len(dues)):
             data1 = request.form.get('check')
             data2 = request.form.get('trash')
             data3 = request.form.get('cross')
             
-            if data1 == str(list(dues_df['ID'])[i]):
+            if data1 == str(dues[i]):
                 due_to_change = Dues.query.filter_by(id=data1).first()
                 due_to_change.status = True
                 db.session.commit()
-            elif data2 == str(list(dues_df['ID'])[i]):
+            elif data2 == str(dues[i]):
                 due_to_change = Dues.query.filter_by(id=data2).delete()
                 db.session.commit()
-            elif data3 == str(list(dues_df['ID'])[i]):
+            elif data3 == str(dues[i]):
                 due_to_change = Dues.query.filter_by(id=data3).first()
                 due_to_change.status = False
                 db.session.commit()
@@ -216,15 +218,15 @@ def events_page():
         # for err_msg in form.errors.values():
             # flash(f'There was an error with creating a due: {err_msg}', category='danger')
     
-    events = Events.query.all()
-    events_cols = ['id','title','purpose','start_event','end_event','url','created_by']
-    events_df = db_to_dataframe(events, ['ID','Title','Purpose','Start_Event','End_Event','URL','Created_By'], events_cols)
+    events = [event.id for event in Events.query.all()]
+    # events_cols = ['id','title','purpose','start_event','end_event','url','created_by']
+    # events_df = db_to_dataframe(events, ['ID','Title','Purpose','Start_Event','End_Event','URL','Created_By'], events_cols)
 
     if request.method == "POST":
-        for i in range(events_df.shape[0]):
+        for i in range(len(events)):
             data1 = request.form.get('trash')
             
-            if data1 == str(list(events_df['ID'])[i]):
+            if data1 == str(events[i]):
                 event_to_change = Events.query.filter_by(id=data1).delete()
                 db.session.commit()
             else:
@@ -245,26 +247,21 @@ def events_page():
 @app.route('/approve_members', methods=['GET','POST'])
 @login_required
 def approve_members_page():
-    users = User.query.all()
-    flats = Flat.query.all()
-    user_cols = ['id','name','email_address','contact_no','admin_user','confirmed']
-    flat_cols = ['flat_no','floor','owner']
-
-    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator','Confirmed'], user_cols)
-    flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
-    user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
-    user_info = user_info[user_info['Confirmed']==False]
-    user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
+    users = [user.id for user in User.query.all()]
 
     if request.method == "POST":
-        for i in range(user_info.shape[0]):
+        for i in range(len(users)):
             data1 = request.form.get('confirm')
             
-            if data1 == str(list(user_info['ID'])[i]):
+            if data1 == str(users[i]):
                 user_to_change = User.query.filter_by(id=data1).first()
                 user_to_change.confirmed = True
                 user_to_change.confirmed_on = datetime.now()
                 db.session.commit()
+    users = User.query.all()
+    flats = Flat.query.all()
+    user_cols = ['id','name','email_address','contact_no','admin_user','confirmed']
+    flat_cols = ['flat_no','floor','owner']
     user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator','Confirmed'], user_cols)
     flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
     user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
