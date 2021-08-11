@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}
+    Events
+{% endblock %}
+{% block content %}
+{% if current_user.is_authenticated %}
+<div class="events-table">
+  <table class="table table-hover table-light">
+      <thead>
+          <tr>
+              <!-- Your Columns HERE -->
+
+              <th scope="col">Title</th>
+              <th scope="col">Purpose</th>
+              <th scope="col">Start Event</th>
+              <th scope="col">End Event</th>
+              <th scope="col">URL</th>
+              <th scope="col">Created By</th>
+              <th scope="col">Actions</th>
+          </tr>
+      </thead>
+      <tbody>
+          <!-- Your rows inside the table HERE: -->
+          {% for _,event in events_table.iterrows() %}
+              <tr>
+                  <td>{{ event['Title'] }}</td>
+                  <td>{{ event['Purpose'] }}</td>
+                  <td>{{ event['Start_Event'] }}</td>
+                  <td>{{ event['End_Event'] }}</td>
+                  <td>{{ event['URL'] }}</td>
+                  <td>{{ event['Name'] }}</td>
+                  {% if current_user.id == event['Created_By'] or current_user.admin_user %}
+                  <td>
+                    <form action="" method="POST">
+                        <button name="trash" value="{{event['ID_x']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
+                    </form>
+                  </td>
+                  {% else %}
+                    <td>
+                        <form action=""">
+                            <button class="btn btn-sm btn-outline" style="background-color: gray; margin-top:0rem">Cannot Edit</button>
+                        </form>
+                    </td>
+                  {% endif %}
+
+              </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
+<div class = "sticky-button" style="overflow: visible;">
+    <button id = "modal-btn" class="btn btn-primary btn-md" data-target="#create_events" data-toggle="modal" style="position: fixed; bottom: 2rem; right: 2rem; border-radius: 50%; margin-left: 1rem; font-size: 1rem; width: 3rem; height: 3rem">+</button>
+</div>
+<div class="modal" id="create_events" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Event</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border:none; background-color: transparent;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class = "form-register" style="color:black">
+            {{form.hidden_tag()}}
+            <br>                    
+            <span>{{form.title.label()}}
+            {{form.title(class="form-control",placeholder="Title")}}</span>
+            
+            <span>{{form.purpose.label()}}
+            {{form.purpose(class="form-control",placeholder="Why is this event being convened?")}}</span>
+
+            <span>Start Event<br>
+            {{form.start_event_date()}}         {{form.start_event_time()}}</span><br>
+
+            <span>End Event<br>
+                {{form.end_event_date()}}         {{form.end_event_time()}}</span><br>
+
+            <span>{{form.url.label()}}<br>
+            <p style="font-size: 90%;">Can use <a href="https://meet.google.com/" target="_blank">Google Meet</a></p>
+            {{form.url(class="form-control",placeholder="Virtual Meeting Link(optional)")}}</span>
+            <br>
+        </div>
+        <div class="modal-footer">
+            <hr>
+            {{form.submit(class="btn btn-md btn-block btn-primary")}}
+            <button type="button" class="btn btn-md btn-secondary" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+{% block script %}
+<script>
+</script>
+{% endblock %}

@@ -1,13 +1,14 @@
 from building_portal import app, sender_id, sender_password
 from flask import redirect, render_template,flash, url_for, request
-from building_portal.model import Dues, Flat, User
-from building_portal.forms import RegisterForm, LoginForm, DuesForm
+from building_portal.model import Dues, Flat, User, Events
+from building_portal.forms import RegisterForm, LoginForm, DuesForm, EventsForm
 from building_portal import db
 from datetime import datetime
 from flask_login import login_user, logout_user, current_user
 from flask_security import login_required
 import pandas as pd
 from building_portal.load_functions import db_to_dataframe
+from building_portal.email_class import Email_Stakeholders
 
 @app.route('/')
 @app.route('/home')
@@ -73,7 +74,7 @@ def member_page():
     user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
     flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
     user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
-    print(user_info.columns)
+    
     user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
 
     if request.method == "POST":
@@ -186,9 +187,88 @@ def payment_history_page():
     dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
     return render_template('payment_history.html', dues_table = dues_info)
 
-@app.route('/events')
+@app.route('/events', methods=['GET','POST'])
 @login_required
 def events_page():
-    form=DuesForm()
-    return render_template('events.html', form=form)
+    form=EventsForm()
+    if form.validate_on_submit():
+        event_to_create = Events(title=form.title.data,
+                                purpose = form.purpose.data,
+                                start_event = datetime.combine(form.start_event_date.data, form.start_event_time.data),
+                                end_event = datetime.combine(form.end_event_date.data, form.end_event_time.data),
+                                url = form.url.data,
+                                created_by = current_user.id)
+        db.session.add(event_to_create)
+        db.session.commit()
+        email_class = Email_Stakeholders()
+        email_class.send_email_with_invite(Date_Start = str(form.start_event_date.data),
+                                           Time_Start = str(form.start_event_time.data),
+                                           Date_End = str(form.end_event_date.data),
+                                           Time_End = str(form.end_event_time.data),
+                                           To_Addresses = [u.email_address for u in User.query.all()],
+                                           Subject = form.title.data,
+                                           Body = form.purpose.data,
+                                           Url=form.url.data,
+                                           From_Address = sender_id,
+                                           From_Password = sender_password)
+        return redirect(url_for('events_page'))
+    # if form.errors!={}: # if there are errors from validations
+        # for err_msg in form.errors.values():
+            # flash(f'There was an error with creating a due: {err_msg}', category='danger')
+    
+    events = Events.query.all()
+    events_cols = ['id','title','purpose','start_event','end_event','url','created_by']
+    events_df = db_to_dataframe(events, ['ID','Title','Purpose','Start_Event','End_Event','URL','Created_By'], events_cols)
 
+    if request.method == "POST":
+        for i in range(events_df.shape[0]):
+            data1 = request.form.get('trash')
+            
+            if data1 == str(list(events_df['ID'])[i]):
+                event_to_change = Events.query.filter_by(id=data1).delete()
+                db.session.commit()
+            else:
+                pass # unknown
+    users = User.query.all()
+    events = Events.query.all()
+    
+    user_cols = ['id','name','email_address','contact_no','admin_user']
+    events_cols = ['id','title','purpose','start_event','end_event','url','created_by']
+
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+    events_df = db_to_dataframe(events, ['ID','Title','Purpose','Start_Event','End_Event','URL','Created_By'], events_cols)
+    events_info = pd.merge(events_df, user_df, left_on='Created_By', right_on='ID')
+    events_info = events_info.sort_values(by=['Start_Event'], ascending=False)
+    events_info = events_info[['ID_x','Title','Purpose','Start_Event','End_Event','URL','Created_By','Name']]
+    return render_template('events.html', form=form, events_table = events_info)
+
+@app.route('/approve_members', methods=['GET','POST'])
+@login_required
+def approve_members_page():
+    users = User.query.all()
+    flats = Flat.query.all()
+    user_cols = ['id','name','email_address','contact_no','admin_user','confirmed']
+    flat_cols = ['flat_no','floor','owner']
+
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator','Confirmed'], user_cols)
+    flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
+    user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
+    user_info = user_info[user_info['Confirmed']==False]
+    user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
+
+    if request.method == "POST":
+        for i in range(user_info.shape[0]):
+            data1 = request.form.get('confirm')
+            
+            if data1 == str(list(user_info['ID'])[i]):
+                user_to_change = User.query.filter_by(id=data1).first()
+                user_to_change.confirmed = True
+                user_to_change.confirmed_on = datetime.now()
+                db.session.commit()
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator','Confirmed'], user_cols)
+    flat_df = db_to_dataframe(flats, ['Flat_Number','Floor','Owner'], flat_cols)
+    user_info = pd.merge(user_df, flat_df, left_on='ID', right_on='Owner')
+    user_info = user_info[user_info['Confirmed']==False]
+    user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
+
+    return render_template('approve_members.html', member_table = user_info)

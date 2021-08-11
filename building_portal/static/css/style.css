@@ -1,3 +1,7 @@
+.navbar{
+    width: 100%;
+}
+
 body{
     color:black;
 }
@@ -88,6 +92,13 @@ body{
 }
 
 .dues-table{
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 1rem;
+}
+
+.events-table{
     display: flex;
     justify-content: center;
     margin-top: 1rem;

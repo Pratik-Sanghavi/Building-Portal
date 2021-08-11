@@ -59,7 +59,7 @@ class Events(db.Model):
     purpose = db.Column(db.String(length=400),nullable=False)
     start_event = db.Column(db.DateTime, nullable=False, unique=True)
     end_event = db.Column(db.DateTime, nullable=False, unique=True)
-    url = db.Column(db.String(length=100),nullable=False)
+    url = db.Column(db.String(length=100))
     created_by = db.Column(db.Integer(),db.ForeignKey('user.id'))
 
 class Maintenance(db.Model):

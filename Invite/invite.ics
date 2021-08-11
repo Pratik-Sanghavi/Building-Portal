@@ -1,0 +1,12 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ics.py - http://git.io/lLljaA
+BEGIN:VEVENT
+DESCRIPTION:To check creation of a new event\nMeeting Link:\nhttps://meet.google.com/sqt-igzb-uyj
+DTEND:20210811T000000Z
+DTSTART:20210811T000000Z
+SUMMARY:First meeting
+UID:35586f1f-7de0-435a-a4c9-1ca0a20b6914@3558.org
+URL:https://meet.google.com/sqt-igzb-uyj
+END:VEVENT
+END:VCALENDAR

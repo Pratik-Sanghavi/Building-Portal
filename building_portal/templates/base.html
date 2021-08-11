@@ -34,12 +34,12 @@
                     <li><a class="dropdown-item" href="{{ url_for('employee_page') }}">Employees</a></li>
                     {% if current_user.is_authenticated and current_user.admin_user %}
                       <li><hr class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="#">Approve New Members</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('approve_members_page')}}">Approve New Members</a></li>
                     {% endif %}
                 </ul>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Events</a>
+                <a class="nav-link" href="{{url_for('events_page')}}">Events</a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

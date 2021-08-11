@@ -1,5 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, FloatField, SelectField, DecimalField
+from wtforms.widgets import html5 as widgets
+from wtforms import core
+from wtforms.fields.html5 import TimeField, DateField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError, InputRequired
 from building_portal.model import User,Flat
 import phonenumbers
@@ -59,4 +62,9 @@ class DuesForm(FlaskForm):
 class EventsForm(FlaskForm):
     title = StringField(label="Title", validators=[Length(min=2, max=200), DataRequired()])
     purpose = StringField(label="Purpose", validators=[Length(min=2, max=400), DataRequired()])
+    start_event_date = DateField(label="Start Date", validators=[DataRequired()])
+    start_event_time = TimeField(label="Starting Time", validators=[DataRequired()])
+    end_event_date = DateField(label="Start Date", validators=[DataRequired()])
+    end_event_time = TimeField(label="Ending Time", validators=[DataRequired()])
+    url = StringField(label="Meeting URL")
     submit = SubmitField(label='Create Event')

@@ -4,17 +4,20 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 from ics import Calendar, Event
+import os
 
 class Email_Stakeholders():
-    def send_email_with_invite(Date_Start, Time_Start, Date_End, Time_End, duration, To_Addresses, Subject, Body, Url, From_Address, From_Password):
+    def send_email_with_invite(self, Date_Start, Time_Start, Date_End, Time_End, To_Addresses, Subject, Body, Url, From_Address, From_Password):
         c = Calendar()
         e = Event()
         e.name = Subject
         e.description = str(Body) + "\nMeeting Link:\n" + str(Url)
         e.begin = str(Date_Start) + str(Time_Start)
         e.end = str(Date_End) + str(Time_End)
-        e.url(str(Url))
+        e.url = str(Url)
         c.events.add(e)
+        if not os.path.exists('./Invite'):
+            os.makedirs('./Invite')
         with open('./Invite/invite.ics', 'w') as f:
             f.write(str(c))
         # instance of MIMEMultipart
@@ -30,7 +33,7 @@ class Email_Stakeholders():
         msg['Subject'] = Subject
 
         # string to store the body of the mail
-        body = str(Body) + "\nMeeting Link:\n" + str(Url)
+        body = str(Body) + "\nMeeting Link:\n" + str(Url) + "\nThis is a system generated email.\nPlease do not reply to this email"
 
         # attach the body with the msg instance
         msg.attach(MIMEText(body, 'plain'))
