@@ -2,11 +2,10 @@ BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:ics.py - http://git.io/lLljaA
 BEGIN:VEVENT
-DESCRIPTION:To check creation of a new event\nMeeting Link:\nhttps://meet.google.com/hmd-odvw-uug
-DTEND:20210811T000000Z
-DTSTART:20210811T000000Z
+DESCRIPTION:To check creation of a new event\nMeeting Link:\n
+DTEND:20210812T000000Z
+DTSTART:20210812T000000Z
 SUMMARY:First meeting
-UID:a44a278f-dbf7-4bdc-bf5a-81b18205576d@a44a.org
-URL:https://meet.google.com/hmd-odvw-uug
+UID:3100e1ca-f292-4808-9d51-0e2fac83789e@3100.org
 END:VEVENT
 END:VCALENDAR
