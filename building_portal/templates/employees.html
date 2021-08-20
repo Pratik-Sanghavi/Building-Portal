@@ -3,15 +3,20 @@
     Employees
 {% endblock %}
 {% block content %}
-    <div class="employee-wrapper">
-    {% for _,employee in employee_table.iterrows() %}
-        <div id="{{employee['Employee_Name']}}"">
-        <h5>{{ employee['Employee_Name'] }}</h5>
-        <hr>
-        <ul>
-            <li class="Designation">Designation: {{ employee['Designation'] }}</li>
-        </ul>
+    {% if current_user.confirmed or current_user.admin_user %}
+        <div class="employee-wrapper">
+        {% for _,employee in employee_table.iterrows() %}
+            <div id="{{employee['Employee_Name']}}"">
+            <h5>{{ employee['Employee_Name'] }}</h5>
+            <hr>
+            <ul>
+                <li class="Designation">Designation: {{ employee['Designation'] }}</li>
+            </ul>
+            </div>
+        {% endfor %}
         </div>
-    {% endfor %}
-    </div>
+    {% else %}
+        <h2>Unauthorized</h2>
+        <p>Please register or wait for the administrator to confirm your membership</p>
+    {% endif %}
 {% endblock %}

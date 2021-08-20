@@ -3,36 +3,41 @@
     My Dues
 {% endblock %}
 {% block content %}
-{% if current_user.is_authenticated %}
-<div class="dues-table">
-  <table class="table table-hover table-light">
-      <thead>
-          <tr>
-              <!-- Your Columns HERE -->
+{% if current_user.confirmed or current_user.admin_user %}
+  {% if current_user.confirmed %}
+  <div class="dues-table">
+    <table class="table table-hover table-light">
+        <thead>
+            <tr>
+                <!-- Your Columns HERE -->
 
-              <th scope="col">Tenant</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Purpose</th>
-              <th scope="col">Created On</th>
-              <th scope="col">Assigner</th>
-          </tr>
-      </thead>
-      <tbody>
-          <!-- Your rows inside the table HERE: -->
-          {% for _,due in dues_table.iterrows() %}
-            {% if due['Status'] == False %}
-              <tr>
-                  <td>{{ due['Assignee'] }}</td>
-                  <td>{{ due['Amount'] }}</td>
-                  <td>{{ due['Purpose'] }}</td>
-                  <td>{{ due['Created_On'] }}</td>
-                  <td>{{ due['Assigner'] }}<sup>Admin</sup></td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-      </tbody>
-  </table>
-</div>
+                <th scope="col">Tenant</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Purpose</th>
+                <th scope="col">Created On</th>
+                <th scope="col">Assigner</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Your rows inside the table HERE: -->
+            {% for _,due in dues_table.iterrows() %}
+              {% if due['Status'] == False %}
+                <tr>
+                    <td>{{ due['Assignee'] }}</td>
+                    <td>{{ due['Amount'] }}</td>
+                    <td>{{ due['Purpose'] }}</td>
+                    <td>{{ due['Created_On'] }}</td>
+                    <td>{{ due['Assigner'] }}<sup>Admin</sup></td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
+  {% endif %}
+{% else %}
+  <h2>Unauthorized</h2>
+  <p>Please register or wait for the administrator to confirm your membership</p>
 {% endif %}
 {% endblock %}
 {% block script %}
