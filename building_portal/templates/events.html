@@ -4,7 +4,6 @@
 {% endblock %}
 {% block content %}
 {% if current_user.confirmed or current_user.admin_user %}
-  {% if current_user.confirmed %}
   <div class="events-table">
     <table class="table table-hover table-light">
         <thead>
@@ -91,10 +90,12 @@
         </div>
       </div>
     </div>
-  {% endif %}
+{% elif current_user.name|length > 0 %}
+  <h2>Unauthorized</h2>
+  <p>Hi {{current_user.name}}! Please wait for the current administrator to confirm your membership</p>
 {% else %}
   <h2>Unauthorized</h2>
-  <p>Please register or wait for the administrator to confirm your membership</p>
+  <p>Please register before viewing this page!</p>
 {% endif %}
 {% endblock %}
 {% block script %}
