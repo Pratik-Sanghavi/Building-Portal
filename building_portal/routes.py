@@ -30,10 +30,16 @@ def register_page():
                               admin_user = form.admin_user.data)
         db.session.add(user_to_create)
         db.session.commit()
-        flat_to_create = Flat(flat_no=form.flat_no.data, floor=form.floor.data)
-        flat_to_create.owner = User.query.filter_by(user_name=form.username.data).first().id
-        db.session.add(flat_to_create)
-        db.session.commit()
+        print([number.flat_no for number in Flat.query.all()])
+        if form.flat_no.data not in [number.flat_no for number in Flat.query.all()]:
+            flat_to_create = Flat(flat_no=form.flat_no.data, floor=form.floor.data)
+            flat_to_create.owner = User.query.filter_by(user_name=form.username.data).first().id
+            db.session.add(flat_to_create)
+            db.session.commit()
+        else:
+            flat_to_reassign = Flat.query.filter_by(id=form.flat_no.data).first()
+            flat_to_reassign = User.query.filter_by(user_name=form.username.data).first().id
+            db.session.commit()
         return redirect(url_for('home'))
     if form.errors!={}: # if there are errors from validations
         for err_msg in form.errors.values():
@@ -71,12 +77,18 @@ def member_page():
     if request.method == "POST":
         for i in range(len(users)):
             data1 = request.form.get('admin')
+            data2 = request.form.get('trash')
             
             if data1 == str(users[i]):
                 user_to_change = User.query.filter_by(id=data1).first()
                 user_to_change.admin_user = True
                 current_user.admin_user = False
                 db.session.commit()
+            elif data2 == str(users[i]):
+                user_to_change = User.query.filter_by(id=data2).delete()
+                db.session.commit()
+            else:
+                pass
 
     users = User.query.all()
     flats = Flat.query.all()
@@ -252,12 +264,19 @@ def approve_members_page():
     if request.method == "POST":
         for i in range(len(users)):
             data1 = request.form.get('confirm')
+            data2 = request.form.get('trash')
             
             if data1 == str(users[i]):
                 user_to_change = User.query.filter_by(id=data1).first()
                 user_to_change.confirmed = True
                 user_to_change.confirmed_on = datetime.now()
                 db.session.commit()
+            elif data2 == str(users[i]):
+                flat_to_remove = Flat.query.filter_by(owner=data2).delete()
+                user_to_change = User.query.filter_by(id=data2).delete()
+                db.session.commit()
+            else:
+                pass
     users = User.query.all()
     flats = Flat.query.all()
     user_cols = ['id','name','email_address','contact_no','admin_user','confirmed']

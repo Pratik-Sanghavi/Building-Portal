@@ -32,6 +32,9 @@
                             <td>
                                 <form action="" method="POST">
                                     <button name="confirm" value="{{member['ID']}}" class="btn btn-sm btn-outline btn-success" style="margin-top:0rem">Make Member</button>
+                                    {% if member['Administrator'] == False %}
+                                        <button name="trash" value="{{member['ID']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
+                                    {% endif %}
                                 </form>
                             </td>
                         {% endif %}

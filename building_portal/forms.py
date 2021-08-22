@@ -22,7 +22,9 @@ class RegisterForm(FlaskForm):
     def validate_flat_no(self, flat_no_to_check):
         flat_no = Flat.query.filter_by(flat_no=flat_no_to_check.data).first()
         if flat_no:
-            raise ValidationError('User with Flat Number already exists! Please check with administrator')
+            user_exists = User.query.filter_by(id = flat_no.owner).first()
+            if user_exists:
+                raise ValidationError('User with Flat Number already exists! Please check with administrator')
     def validate_admin_user(self, admin_user_to_check):
         if admin_user_to_check.data == True:
             admin_exists = User.query.filter_by(admin_user=admin_user_to_check.data).first()
