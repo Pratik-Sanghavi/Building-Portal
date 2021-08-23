@@ -1,7 +1,7 @@
 from building_portal import app, sender_id, sender_password
 from flask import redirect, render_template,flash, url_for, request
-from building_portal.model import Dues, Flat, User, Events
-from building_portal.forms import RegisterForm, LoginForm, DuesForm, EventsForm
+from building_portal.model import Dues, Flat, Maintenance, User, Events
+from building_portal.forms import RegisterForm, LoginForm, DuesForm, EventsForm, StartMaintenanceForm
 from building_portal import db
 from datetime import datetime
 from flask_login import login_user, logout_user, current_user
@@ -288,3 +288,32 @@ def approve_members_page():
     user_info = user_info[['ID','Name','Flat_Number','Floor', 'Contact_Number','Email_Address','Administrator']]
 
     return render_template('approve_members.html', member_table = user_info)
+
+@app.route('/maintenance_history', methods=['GET','POST'])
+@login_required
+def maintenance_history_page():
+    form=StartMaintenanceForm()
+    if form.validate_on_submit():
+        maintenance_to_create = Maintenance(title=form.title.data,
+                                work_undertaken = form.work_undertaken.data,
+                                estimated_cost = form.estimated_cost.data,
+                                undertaken_on = form.undertaken_on.data,
+                                estimated_completion_date = form.estimated_completion_date.data,
+                                actual_cost = None,
+                                actual_completion_date = None,
+                                undertaken_by = current_user.id)
+
+        db.session.add(maintenance_to_create)
+        db.session.commit()
+        return redirect(url_for('maintenance_history_page'))
+
+    users = User.query.all()
+    maintenance = Maintenance.query.all()
+    user_cols = ['id','name','email_address','contact_no','admin_user']
+    maintenance_cols = ['title','work_undertaken','estimated_cost','undertaken_on','estimated_completion_date','actual_cost','actual_completion_date','undertaken_by']
+
+    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+    maintenance_df = db_to_dataframe(maintenance, ['Title','Work_Undertaken','Estimated_Cost','Undertaken_On','Estimated_Completion_Date','Actual_Cost','Actual_Completion_Date','Undertaken_By'], maintenance_cols)
+    user_info = pd.merge(user_df, maintenance_df, left_on='ID', right_on='Undertaken_By')
+    
+    return render_template('maintenance.html', form=form, maintenance_table = user_info)

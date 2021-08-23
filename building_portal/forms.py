@@ -70,3 +70,12 @@ class EventsForm(FlaskForm):
     end_event_time = TimeField(label="Ending Time", validators=[DataRequired()])
     url = StringField(label="Meeting URL")
     submit = SubmitField(label='Create Event')
+
+class StartMaintenanceForm(FlaskForm):
+
+    title = StringField(label="Title", validators=[Length(min=2, max=200), DataRequired()])
+    work_undertaken = StringField(label="Work Undertaken", validators=[Length(min=2, max=200), DataRequired()])
+    estimated_cost = DecimalField(label='Estimated Cost', places=2, validators=[DataRequired()])
+    undertaken_on = DateField(label="Undertaken On", validators=[DataRequired()])
+    estimated_completion_date = DateField(label="Estimated Completion Date", validators=[DataRequired()])
+    submit = SubmitField(label='Create Event')

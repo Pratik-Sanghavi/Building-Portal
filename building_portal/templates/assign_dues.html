@@ -3,7 +3,7 @@
     Assign Dues
 {% endblock %}
 {% block content %}
-{% if current_user.is_authenticated and current_user.admin_user %}
+{% if current_user.admin_user %}
 <div class="dues-table">
   <table class="table table-hover table-light">
       <thead>

@@ -69,6 +69,6 @@ class Maintenance(db.Model):
     estimated_cost = db.Column(db.DECIMAL(10,2),nullable=False,unique=False)
     undertaken_on = db.Column(db.DateTime, nullable=False)
     estimated_completion_date = db.Column(db.DateTime, nullable=False)
-    actual_cost = db.Column(db.DECIMAL(10,2),nullable=False,unique=False)
-    actual_completion_date = db.Column(db.DateTime, nullable=False)
+    actual_cost = db.Column(db.DECIMAL(10,2),nullable=True,unique=False)
+    actual_completion_date = db.Column(db.DateTime, nullable=True)
     undertaken_by = db.Column(db.Integer(),db.ForeignKey('user.id'))

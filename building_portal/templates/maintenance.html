@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}
+    Assign Dues
+{% endblock %}
+{% block content %}
+{% if current_user.admin_user %}
+<div class = "sticky-button" style="overflow: visible;">
+    <button id = "modal-btn" class="btn btn-primary btn-md" data-target="#create_maintenance" data-toggle="modal">+</button>
+</div>
+<div class="modal" id="create_maintenance" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Maintenance Account</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border:none; background-color: transparent;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class = "form-register" style="color:black">
+            {{form.hidden_tag()}}
+            <br>                    
+            <span>{{form.title.label()}}
+            {{form.title(class="form-control",placeholder="Title")}}</span>
+            
+            <span>{{form.work_undertaken.label()}}
+            {{form.work_undertaken(class="form-control",placeholder="Nature and reason for work undertaken")}}</span>
+            
+            <span>
+              {{form.estimated_cost.label()}}
+              {{form.estimated_cost(class="form-control",placeholder="How much is the project expected to cost?")}}
+            </span>    
+            <br>
+            <span>
+                {{form.undertaken_on.label()}}
+                {{form.undertaken_on}}
+            </span>
+            <br>
+            <br>
+            <span>
+                {{form.estimated_completion_date.label()}}
+                {{form.estimated_completion_date}}
+            </span>
+        </div>
+        <div class="modal-footer">
+            <hr>
+            {{form.submit(class="btn btn-md btn-block btn-primary")}}
+            <button type="button" class="btn btn-md btn-secondary" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% if current_user.confirmed or current_user.admin_user %}
+    <div class="maintenance-table">
+        <table class="table table-hover table-light">
+            <thead>
+                <tr>
+                    <!-- Your Columns HERE -->
+                    <th scope="col">Title</th>
+                    <th scope="col">Work Undertaken</th>
+                    <th scope="col">Estimated Cost</th>
+                    <th scope="col">Undertaken On</th>
+                    <th scope="col">Estimated Completion Date</th>
+                    <th scope="col">Actual Cost</th>
+                    <th scope="col">Actual Completion Date</th>
+                    <th scope="col">Undertaken By</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Your rows inside the table HERE: -->
+                {% for _,maintenance in maintenance_table.iterrows() %}
+                    <tr>
+                        <td>{{ maintenance['Title'] }}</td>
+                        <td>{{ maintenance['Work_Undertaken'] }}</td>
+                        <td>{{ maintenance['Estimated_Cost'] }}</td>
+                        <td>{{ maintenance['Undertaken_On'] }}</td>
+                        <td>{{ maintenance['Estimated_Completion_Date'] }}</td>
+                        <td>{{ maintenance['Actual_Cost'] }}</td>
+                        <td>{{ maintenance['Actual_Completion_Date'] }}</td>
+                        <td>{{ maintenance['Name'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% elif current_user.name|length > 0 %}
+    <h2>Unauthorized</h2>
+    <p>Hi {{current_user.name}}! Please wait for the current administrator to confirm your membership</p>
+{% else %}
+    <h2>Unauthorized</h2>
+    <p>Please register before viewing this page!</p>
+{% endif %}
+{% endblock %}
+{% block script %}
+<script>
+</script>
+{% endblock %}
