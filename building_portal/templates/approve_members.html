@@ -28,7 +28,7 @@
                         <td>{{ member['Contact_Number'] }}</td>
                         <td>{{ member['Email_Address'] }}</td>
                         <td>{{ member['Administrator'] }}</td>
-                        {% if current_user.is_authenticated and current_user.admin_user %}
+                        {% if current_user.admin_user %}
                             <td>
                                 <form action="" method="POST">
                                     <button name="confirm" value="{{member['ID']}}" class="btn btn-sm btn-outline btn-success" style="margin-top:0rem">Make Member</button>

@@ -1,7 +1,7 @@
 from building_portal import app, sender_id, sender_password
 from flask import redirect, render_template,flash, url_for, request
 from building_portal.model import Dues, Flat, Maintenance, User, Events
-from building_portal.forms import RegisterForm, LoginForm, DuesForm, EventsForm, StartMaintenanceForm
+from building_portal.forms import EndMaintenanceForm, RegisterForm, LoginForm, DuesForm, EventsForm, StartMaintenanceForm, EndMaintenanceForm
 from building_portal import db
 from datetime import datetime
 from flask_login import login_user, logout_user, current_user
@@ -30,7 +30,6 @@ def register_page():
                               admin_user = form.admin_user.data)
         db.session.add(user_to_create)
         db.session.commit()
-        print([number.flat_no for number in Flat.query.all()])
         if form.flat_no.data not in [number.flat_no for number in Flat.query.all()]:
             flat_to_create = Flat(flat_no=form.flat_no.data, floor=form.floor.data)
             flat_to_create.owner = User.query.filter_by(user_name=form.username.data).first().id
@@ -123,13 +122,8 @@ def assign_dues_page():
         db.session.commit()
         db.session.commit()
         return redirect(url_for('assign_dues_page'))
-    # if form.errors!={}: # if there are errors from validations
-        # for err_msg in form.errors.values():
-            # flash(f'There was an error with creating a due: {err_msg}', category='danger')
     
     dues = [due.id for due in Dues.query.all()]
-    # dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
-    # dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
 
     if request.method == "POST":
         for i in range(len(dues)):
@@ -226,13 +220,8 @@ def events_page():
                                            From_Address = sender_id,
                                            From_Password = sender_password)
         return redirect(url_for('events_page'))
-    # if form.errors!={}: # if there are errors from validations
-        # for err_msg in form.errors.values():
-            # flash(f'There was an error with creating a due: {err_msg}', category='danger')
     
     events = [event.id for event in Events.query.all()]
-    # events_cols = ['id','title','purpose','start_event','end_event','url','created_by']
-    # events_df = db_to_dataframe(events, ['ID','Title','Purpose','Start_Event','End_Event','URL','Created_By'], events_cols)
 
     if request.method == "POST":
         for i in range(len(events)):
@@ -293,6 +282,7 @@ def approve_members_page():
 @login_required
 def maintenance_history_page():
     form=StartMaintenanceForm()
+    form2=EndMaintenanceForm()
     if form.validate_on_submit():
         maintenance_to_create = Maintenance(title=form.title.data,
                                 work_undertaken = form.work_undertaken.data,
@@ -306,14 +296,17 @@ def maintenance_history_page():
         db.session.add(maintenance_to_create)
         db.session.commit()
         return redirect(url_for('maintenance_history_page'))
-
+    if form2.validate_on_submit():
+        maintenance_to_change = Maintenance.query.filter_by(id = request.form.get('maintenance_id')).first()
+        maintenance_to_change.actual_cost = form2.actual_cost.data
+        maintenance_to_change.actual_completion_date = form2.actual_completion_date.data
+        db.session.commit()
     users = User.query.all()
     maintenance = Maintenance.query.all()
     user_cols = ['id','name','email_address','contact_no','admin_user']
-    maintenance_cols = ['title','work_undertaken','estimated_cost','undertaken_on','estimated_completion_date','actual_cost','actual_completion_date','undertaken_by']
+    maintenance_cols = ['id','title','work_undertaken','estimated_cost','undertaken_on','estimated_completion_date','actual_cost','actual_completion_date','undertaken_by']
 
     user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
-    maintenance_df = db_to_dataframe(maintenance, ['Title','Work_Undertaken','Estimated_Cost','Undertaken_On','Estimated_Completion_Date','Actual_Cost','Actual_Completion_Date','Undertaken_By'], maintenance_cols)
+    maintenance_df = db_to_dataframe(maintenance, ['ID_main','Title','Work_Undertaken','Estimated_Cost','Undertaken_On','Estimated_Completion_Date','Actual_Cost','Actual_Completion_Date','Undertaken_By'], maintenance_cols)
     user_info = pd.merge(user_df, maintenance_df, left_on='ID', right_on='Undertaken_By')
-    
-    return render_template('maintenance.html', form=form, maintenance_table = user_info)
+    return render_template('maintenance.html', form=form, form2 = form2, maintenance_table = user_info)

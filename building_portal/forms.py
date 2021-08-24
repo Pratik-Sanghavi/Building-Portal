@@ -78,4 +78,9 @@ class StartMaintenanceForm(FlaskForm):
     estimated_cost = DecimalField(label='Estimated Cost', places=2, validators=[DataRequired()])
     undertaken_on = DateField(label="Undertaken On", validators=[DataRequired()])
     estimated_completion_date = DateField(label="Estimated Completion Date", validators=[DataRequired()])
-    submit = SubmitField(label='Create Event')
+    submit = SubmitField(label='Start Maintenance Project')
+
+class EndMaintenanceForm(FlaskForm):
+    actual_cost = DecimalField(label='Actual Cost', places=2, validators=[DataRequired()])
+    actual_completion_date = DateField(label="Actual Completion Date", validators=[DataRequired()])
+    submit = SubmitField(label='End Maintenance Project')

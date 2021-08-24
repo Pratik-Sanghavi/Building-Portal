@@ -66,6 +66,9 @@
                     <th scope="col">Actual Cost</th>
                     <th scope="col">Actual Completion Date</th>
                     <th scope="col">Undertaken By</th>
+                    {% if current_user.admin_user %}
+                      <th scope="col">Completion Status</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -80,6 +83,46 @@
                         <td>{{ maintenance['Actual_Cost'] }}</td>
                         <td>{{ maintenance['Actual_Completion_Date'] }}</td>
                         <td>{{ maintenance['Name'] }}</td>
+                        {% if current_user.admin_user %}
+                        <td>
+                          <div class = "check-button" style="overflow: visible;">
+                            <button class="modal-btn btn btn-primary btn-sm btn-success" data-target="#{{maintenance['Title']}}" data-toggle="modal"><i class="fas fa-check"></i></button>
+                        </div>
+                        <div class="modal" id="{{maintenance['Title']}}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title">Close Maintenance Project</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border:none; background-color: transparent;">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <form method="POST" class = "form-register" style="color:black">
+                                    {{form2.hidden_tag()}}
+                                    <br>
+                                    <input type="hidden" name="maintenance_id" value="{{maintenance['ID_main']}}">                  
+                                    <span>
+                                      {{form2.actual_cost.label()}}
+                                      {{form2.actual_cost(class="form-control",placeholder="How much did the project actually cost?")}}
+                                    </span>
+                                    <br>
+                                    <span>
+                                        {{form2.actual_completion_date.label()}}
+                                        {{form2.actual_completion_date}}
+                                    </span>
+                                </div>
+                                <div class="modal-footer">
+                                    <hr>
+                                    {{form2.submit(class="btn btn-md btn-block btn-primary")}}
+                                    <button type="button" class="btn btn-md btn-secondary" data-dismiss="modal">Close</button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
