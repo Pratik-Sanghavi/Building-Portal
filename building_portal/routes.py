@@ -39,6 +39,17 @@ def register_page():
             flat_to_reassign = Flat.query.filter_by(id=form.flat_no.data).first()
             flat_to_reassign = User.query.filter_by(user_name=form.username.data).first().id
             db.session.commit()
+        email_class = Email_Stakeholders()
+        email_class.send_email(To_Addresses = form.email_address.data,
+                                     Subject = "Creation of your account on Pushpa Kunj Residents Association Portal",
+                                     Body=f"Hi {form.name.data}!\nWe're glad to welcome you to the Pushpa Kunj Family.\nWhile your registration has been received at our end, please wait for the current administrator to confirm your membership. You will only receive access to the full set of features after confirmation.",
+                                     From_Address=sender_id,
+                                     From_Password=sender_password)
+        email_class.send_email(To_Addresses = User.query.filter_by(admin_user=True).first().email_address,
+                                     Subject = f"A new user {form.name.data} of Flat number {form.flat_no.data} wishes to register",
+                                     Body=f"A new user {form.name.data} has been created. You are requested to ratify his/her membership. On approving, he/she will gain access to the set of features available to all members",
+                                     From_Address=sender_id,
+                                     From_Password=sender_password)
         return redirect(url_for('home'))
     if form.errors!={}: # if there are errors from validations
         for err_msg in form.errors.values():
@@ -82,6 +93,17 @@ def member_page():
                 user_to_change = User.query.filter_by(id=data1).first()
                 user_to_change.admin_user = True
                 current_user.admin_user = False
+                email_class = Email_Stakeholders()
+                email_class.send_email(To_Addresses = user_to_change.email_address,
+                                     Subject = f"You have been made the new administrator of Pushpa Kunj by {current_user.name}",
+                                     Body=f"Congratulations {user_to_change.name}!\nYou are now the new administrator of the Pushpa Kunj Residents Association",
+                                     From_Address=sender_id,
+                                     From_Password=sender_password)
+                email_class.send_email(To_Addresses = current_user.email_address,
+                                    Subject = f"You have transferred administrator privileges to {user_to_change.name}",
+                                    Body=f"{user_to_change.name} has been made the new administrator of the Pushpa Kunj Residents Association on {datetime.now()}",
+                                    From_Address=sender_id,
+                                    From_Password=sender_password)
                 db.session.commit()
             elif data2 == str(users[i]):
                 user_to_change = User.query.filter_by(id=data2).delete()
@@ -120,7 +142,12 @@ def assign_dues_page():
         due_to_create = Dues(amount = form.amount.data, purpose = form.purpose.data, status = False, created_on = datetime.now(), created_by = current_user.id, due_to_user = form.due_to_user.data)
         db.session.add(due_to_create)
         db.session.commit()
-        db.session.commit()
+        email_class = Email_Stakeholders()
+        email_class.send_email(To_Addresses = User.query.filter_by(id=form.due_to_user.data).first().email_address,
+                                Subject = f"A new due of Rs{form.amount.data} has been raised against you",
+                                Body=f"A new due of Rs{form.amount.data} has been raised against you by {current_user.name}.\nPurpose: {form.purpose.data}",
+                                From_Address=sender_id,
+                                From_Password=sender_password)
         return redirect(url_for('assign_dues_page'))
     
     dues = [due.id for due in Dues.query.all()]

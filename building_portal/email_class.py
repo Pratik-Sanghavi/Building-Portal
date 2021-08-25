@@ -73,3 +73,40 @@ class Email_Stakeholders():
 
         # terminating the session
         s.quit()
+
+    def send_email(self, To_Addresses, Subject, Body, From_Address, From_Password):
+        # instance of MIMEMultipart
+        msg = MIMEMultipart()
+
+        # storing the senders email address
+        msg['From'] = From_Address
+
+        # storing the receivers email address
+        msg['To'] = ", ".join(To_Addresses)
+
+        # storing the subject
+        msg['Subject'] = Subject
+
+        # string to store the body of the mail
+        body = str(Body) + "\nThis is a system generated email.\nPlease do not reply to this email"
+
+        # attach the body with the msg instance
+        msg.attach(MIMEText(body, 'plain'))
+
+        # creates SMTP session
+        s = smtplib.SMTP('smtp.gmail.com', 587)
+
+        # start TLS for security
+        s.starttls()
+
+        # Authentication
+        s.login(From_Address, From_Password)
+
+        # Converts the Multipart msg into a string
+        text = msg.as_string()
+
+        # sending the mail
+        s.sendmail(From_Address, To_Addresses, text)
+
+        # terminating the session
+        s.quit()
