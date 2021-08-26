@@ -1,2 +1,4 @@
 .env
 building_portal.wsgi
+Dockerfile
+__pycache__
