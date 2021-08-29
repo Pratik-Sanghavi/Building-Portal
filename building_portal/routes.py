@@ -13,7 +13,11 @@ from building_portal.email_class import Email_Stakeholders
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    admin_user = User.query.filter_by(admin_user = True).first()
+    if len(admin_user.name)>0:
+        return render_template('home.html', admin_name = admin_user.name)
+    else:
+        return render_template('home.html')
 
 @app.route('/register', methods=['GET','POST'])
 def register_page():
@@ -80,7 +84,6 @@ def logout_page():
     
 
 @app.route('/members', methods=['GET','POST'])
-@login_required
 def member_page():
     users = [user.id for user in User.query.all()]
 
@@ -125,14 +128,12 @@ def member_page():
     return render_template('members.html', member_table = user_info)
 
 @app.route('/employees')
-@login_required
 def employee_page():
     df = pd.read_csv('./Data/Employee_Data.csv')
     df = df[['Employee_Name','Designation']]
     return render_template('employees.html', employee_table = df)
 
 @app.route('/assign_dues', methods=['GET','POST'])
-@login_required
 def assign_dues_page():
     form=DuesForm()
     user_list = [(u.id, u.name) for u in User.query.all()]
@@ -186,44 +187,46 @@ def assign_dues_page():
     return render_template('assign_dues.html', form=form, dues_table = dues_info)
 
 @app.route('/my_dues')
-@login_required
 def my_dues_page():
-    users = User.query.all()
-    dues = Dues.query.all()
-    user_cols = ['id','name','email_address','contact_no','admin_user']
-    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+    try: 
+        users = User.query.filter_by(id = current_user.id)
+        dues = Dues.query.all(due_to_user = current_user.id)
+        user_cols = ['id','name','email_address','contact_no','admin_user']
+        dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
 
-    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
-    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
-    dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
-    dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
-    dues_info = dues_info[dues_info['Due_To_User'] == current_user.id]
-    dues_info = dues_info[['Amount','Purpose','Status','Created_On','Name_x','Name_y']]
-    dues_info.columns = ['Amount','Purpose','Status','Created_On','Assignee','Assigner']
-    dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
-    return render_template('my_dues.html', dues_table = dues_info)
+        user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+        dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+        dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
+        dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
+        dues_info = dues_info[['Amount','Purpose','Status','Created_On','Name_x','Name_y']]
+        dues_info.columns = ['Amount','Purpose','Status','Created_On','Assignee','Assigner']
+        dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
+        return render_template('my_dues.html', dues_table = dues_info)
+    except:
+        return render_template('my_dues.html')
 
 @app.route('/payment_history')
-@login_required
 def payment_history_page():
-    users = User.query.all()
-    dues = Dues.query.all()
-    user_cols = ['id','name','email_address','contact_no','admin_user']
-    dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
+    try:
+        users = User.query.filter_by(id = current_user.id)
+        dues = Dues.query.all(due_to_user = current_user.id)
+        user_cols = ['id','name','email_address','contact_no','admin_user']
+        dues_cols = ['id','amount','purpose','status','created_on','created_by','due_to_user']
 
-    user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
-    dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
-    dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
-    dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
-    dues_info = dues_info[dues_info['Due_To_User'] == current_user.id]
-    dues_info = dues_info[dues_info['Status'] == True]
-    dues_info = dues_info[['Amount','Purpose','Status','Created_On','Name_x','Name_y']]
-    dues_info.columns = ['Amount','Purpose','Status','Created_On','Assignee','Assigner']
-    dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
-    return render_template('payment_history.html', dues_table = dues_info)
+        user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
+        dues_df = db_to_dataframe(dues, ['ID','Amount','Purpose','Status','Created_On','Created_By','Due_To_User'], dues_cols)
+        dues_info = pd.merge(dues_df, user_df, left_on='Due_To_User', right_on='ID')
+        dues_info = pd.merge(dues_info, user_df, left_on='Created_By', right_on='ID')
+        if dues_info.shape[0] > 1:
+            dues_info = dues_info[dues_info['Status'] == True]
+            dues_info = dues_info[['Amount','Purpose','Status','Created_On','Name_x','Name_y']]
+            dues_info.columns = ['Amount','Purpose','Status','Created_On','Assignee','Assigner']
+            dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
+        return render_template('payment_history.html', dues_table = dues_info)
+    except:
+        return render_template('payment_history.html')
 
 @app.route('/events', methods=['GET','POST'])
-@login_required
 def events_page():
     form=EventsForm()
     if form.validate_on_submit():
@@ -273,7 +276,6 @@ def events_page():
     return render_template('events.html', form=form, events_table = events_info)
 
 @app.route('/approve_members', methods=['GET','POST'])
-@login_required
 def approve_members_page():
     users = [user.id for user in User.query.all()]
 
@@ -306,7 +308,6 @@ def approve_members_page():
     return render_template('approve_members.html', member_table = user_info)
 
 @app.route('/maintenance_history', methods=['GET','POST'])
-@login_required
 def maintenance_history_page():
     form=StartMaintenanceForm()
     form2=EndMaintenanceForm()

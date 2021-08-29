@@ -87,9 +87,9 @@
                           {% if maintenance['Actual_Cost'] == None %}
                             <td>
                               <div class = "check-button" style="overflow: visible;">
-                                <button class="modal-btn btn btn-primary btn-sm btn-success" data-target="#{{maintenance['Title']}}" data-toggle="modal" style="margin-top:0rem">Complete Project</button>
+                                <button class="modal-btn btn btn-primary btn-sm btn-success" data-target="#{{maintenance['ID_main']}}" data-toggle="modal" style="margin-top:0rem">Complete Project</button>
                             </div>
-                            <div class="modal" id="{{maintenance['Title']}}" tabindex="-1" role="dialog">
+                            <div class="modal" id="{{maintenance['ID_main']}}" tabindex="-1" role="dialog">
                                 <div class="modal-dialog" role="document">
                                   <div class="modal-content">
                                     <div class="modal-header">
