@@ -14,4 +14,5 @@ ii. Responsive design of web application<br>
 iii. Delete maintenance events<br>
 iv. Personal Dashboard to view and modify personal information to be confirmed by the admin<br>
 v. Creation of new employee to be added<br>
-vi. Find a way to preserve user information whenever tenant of flat changes so as to look at data created for earlier user
+vi. Find a way to preserve user information whenever tenant of flat changes so as to look at data created for earlier user<br>
+vii. Correct the .ics times to match the timezone (right now its pretty much random)
