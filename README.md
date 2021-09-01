@@ -16,3 +16,7 @@ iv. Personal Dashboard to view and modify personal information to be confirmed b
 v. Creation of new employee to be added<br>
 vi. Find a way to preserve user information whenever tenant of flat changes so as to look at data created for earlier user<br>
 vii. Correct the .ics times to match the timezone (right now its pretty much random)
+
+## Deploy on AWS EC2
+To deploy on AWS EC2, follow this [link](https://levelup.gitconnected.com/how-to-deploy-a-flask-application-on-amazon-ec2-38837df3fa52)<br>
+Note: Deploy using production not development server!! (Very important)
