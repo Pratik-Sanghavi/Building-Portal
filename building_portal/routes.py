@@ -1,3 +1,4 @@
+from pandas._libs.tslibs import NaT
 from building_portal import app, sender_id, sender_password
 from flask import redirect, render_template,flash, url_for, request
 from building_portal.model import Dues, Flat, Maintenance, User, Events
@@ -14,7 +15,7 @@ from building_portal.email_class import Email_Stakeholders
 @app.route('/home')
 def home():
     admin_user = User.query.filter_by(admin_user = True).first()
-    if len(admin_user.name)>0:
+    if admin_user and len(admin_user.name)>0:
         return render_template('home.html', admin_name = admin_user.name)
     else:
         return render_template('home.html')
@@ -337,4 +338,14 @@ def maintenance_history_page():
     user_df = db_to_dataframe(users, ['ID','Name','Email_Address','Contact_Number', 'Administrator'], user_cols)
     maintenance_df = db_to_dataframe(maintenance, ['ID_main','Title','Work_Undertaken','Estimated_Cost','Undertaken_On','Estimated_Completion_Date','Actual_Cost','Actual_Completion_Date','Undertaken_By'], maintenance_cols)
     user_info = pd.merge(user_df, maintenance_df, left_on='ID', right_on='Undertaken_By')
+    user_info['Undertaken_On'] = [datetime.strftime(date.date(), "%d %B %Y") for date in pd.to_datetime(user_info['Undertaken_On'])]
+    user_info['Estimated_Completion_Date'] = [datetime.strftime(date.date(), "%d %B %Y") for date in pd.to_datetime(user_info['Estimated_Completion_Date'])]
+    to_dates = []
+    for date in user_info['Actual_Completion_Date']:
+        if date!=None:
+            # date = datetime(date)
+            to_dates.append(datetime.strftime(date.date(), "%d %B %Y"))
+        else:
+            to_dates.append(None)
+    user_info['Actual_Completion_Date'] = to_dates 
     return render_template('maintenance.html', form=form, form2 = form2, maintenance_table = user_info)
