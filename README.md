@@ -1,6 +1,19 @@
 # Building-Portal
 A portal for building tenants to view and track their payments, create events and reach out to other members and employees
 
+## Requirements
+1. Flask
+   `pip install Flask`
+2. Flask-SQLAlchemy
+   `pip install Flask-SQLAlchemy`
+3. Pandas
+   `pip install pandas`
+4. phonenumbers
+   `pip install phonenumbers`
+5. dotenv
+   `pip install python-dotenv`
+Let me know which ones I have missed here!
+
 ## Features
 1. View members and employees' information
 2. Assign and manage pending and paid dues
