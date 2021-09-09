@@ -4,51 +4,47 @@
 {% endblock %}
 {% block content %}
 {% if current_user.admin_user %}
-<div class="dues-table">
-  <table class="table table-hover table-light">
-      <thead>
-          <tr>
-              <!-- Your Columns HERE -->
-
-              <th scope="col">Tenant</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Purpose</th>
-              <th scope="col">Status</th>
-              <th scope="col">Created On</th>
-              <th scope="col">Assigner</th>
-              <th scope="col">Update Payment Status</th>
-          </tr>
-      </thead>
-      <tbody>
-          <!-- Your rows inside the table HERE: -->
-          {% for _,due in dues_table.iterrows() %}
-              <tr>
-                  <td>{{ due['Assignee'] }}</td>
-                  <td>{{ due['Amount'] }}</td>
-                  <td>{{ due['Purpose'] }}</td>
-                  <td>{{ due['Status'] }}</td>
-                  <td>{{ due['Created_On'] }}</td>
-                  <td>{{ due['Assigner'] }}<sup>Admin</sup></td>
-                  {% if due['Status']==False %}
-                    <td>
-                        <form action="" method="POST">
-                          <button name="check" value="{{due['ID']}}" class="btn btn-sm btn-outline btn-success" style="margin-top:0rem"><i class="fas fa-check"></i></button>
-                          <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
-                        </form>
-                    </td>
+  <!-- Your rows inside the table HERE: -->
+  <div class = "flip-wrapper">
+  {% for _,due in dues_table.iterrows() %}
+          <div class="flip">
+              <div class="front">
+                {% if due['Status']==False %}
+                <h3> &#8377;{{ due['Amount'] }} due to {{ due['Assignee'] }}</h3>
                 {% else %}
-                    <td>
+                <h3> &#8377;{{ due['Amount'] }} paid by {{ due['Assignee'] }}</h3>
+                {% endif %}
+              </div>
+              <div class="back">
+                <p>{{ due['Assignee'] }}</p>
+                <p>{{ due['Amount'] }}</p>
+                <p>{{ due['Purpose'] }}</p>
+                {% if due['Status']==False %}
+                  <p>Unpaid</p>
+                {% else %}
+                  <p>Paid</p>
+                {% endif %}
+                <p>{{ due['Created_On'] }}</p>
+                <p>{{ due['Assigner'] }}<sup>Admin</sup></p>
+                {% if due['Status']==False %}
+                  <p>
                       <form action="" method="POST">
-                        <button name="cross" value="{{due['ID']}}" class="btn btn-outline btn-sm" style="background-color: gray; margin-top:0rem"><i class="fas fa-times"></i></button>
-                        <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
+                        <button name="check" value="{{due['ID']}}" class="btn btn-sm btn-outline btn-success"><i class="fas fa-check"></i></button>
+                        <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red"><i class="far fa-trash-alt"></i></button>
                       </form>
-                    </td>
-                  {% endif %}
-              </tr>
-          {% endfor %}
-      </tbody>
-  </table>
-</div>
+                  </p>
+                {% else %}
+                  <p>
+                    <form action="" method="POST">
+                      <button name="cross" value="{{due['ID']}}" class="btn btn-outline btn-sm" style="background-color: gray;"><i class="fas fa-times"></i></button>
+                      <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red;"><i class="far fa-trash-alt"></i></button>
+                    </form>
+                  </p>
+                {% endif %}
+              </div>
+          </div>
+  {% endfor %}
+  </div>
 <div class = "sticky-button" style="overflow: visible;">
     <button id = "modal-btn" class="btn btn-primary btn-md" data-target="#create_dues" data-toggle="modal">+</button>
 </div>

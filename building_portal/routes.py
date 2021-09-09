@@ -185,6 +185,7 @@ def assign_dues_page():
     dues_info = dues_info[['ID_x','Amount','Purpose','Status','Created_On','Name_x','Name_y']]
     dues_info.columns = ['ID','Amount','Purpose','Status','Created_On','Assignee','Assigner']
     dues_info = dues_info.sort_values(by=['Created_On'], ascending=False)
+    dues_info['Created_On'] = return_dates(dues_info['Created_On'])
     return render_template('assign_dues.html', form=form, dues_table = dues_info)
 
 @app.route('/my_dues')
