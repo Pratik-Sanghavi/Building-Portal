@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}
+    Assign Dues
+{% endblock %}
+{% block content %}
+{% if current_user.admin_user %}
+  <!-- Your rows inside the table HERE: -->
+  <div class = "flip-wrapper">
+  {% for _,due in dues_table.iterrows() %}
+          <div class="flip">
+              <div class="front">
+                {% if due['Status']==False %}
+                <h3> &#8377;{{ due['Amount'] }} due to {{ due['Assignee'] }}</h3>
+                {% else %}
+                <h3> &#8377;{{ due['Amount'] }} paid by {{ due['Assignee'] }}</h3>
+                {% endif %}
+              </div>
+              <div class="back">
+                <p>{{ due['Assignee'] }}</p>
+                <p>{{ due['Amount'] }}</p>
+                <p>{{ due['Purpose'] }}</p>
+                {% if due['Status']==False %}
+                  <p>Unpaid</p>
+                {% else %}
+                  <p>Paid</p>
+                {% endif %}
+                <p>{{ due['Created_On'] }}</p>
+                <p>{{ due['Assigner'] }}<sup>Admin</sup></p>
+                {% if due['Status']==False %}
+                  <p>
+                      <form action="" method="POST">
+                        <button name="check" value="{{due['ID']}}" class="btn btn-sm btn-outline btn-success"><i class="fas fa-check"></i></button>
+                        <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red"><i class="far fa-trash-alt"></i></button>
+                      </form>
+                  </p>
+                {% else %}
+                  <p>
+                    <form action="" method="POST">
+                      <button name="cross" value="{{due['ID']}}" class="btn btn-outline btn-sm" style="background-color: gray;"><i class="fas fa-times"></i></button>
+                      <button name="trash" value="{{due['ID']}}" class="btn btn-sm btn-outline" style="background-color: red;"><i class="far fa-trash-alt"></i></button>
+                    </form>
+                  </p>
+                {% endif %}
+              </div>
+          </div>
+  {% endfor %}
+  </div>
+<div class = "sticky-button" style="overflow: visible;">
+    <button id = "modal-btn" class="btn btn-primary btn-md" data-target="#create_dues" data-toggle="modal">+</button>
+</div>
+<div class="modal" id="create_dues" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Assign Payment</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border:none; background-color: transparent;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" class = "form-register" style="color:black">
+            {{form.hidden_tag()}}
+            <br>                    
+            <span>{{form.amount.label()}}
+            {{form.amount(class="form-control",placeholder="Amount")}}</span>
+            
+            <span>{{form.purpose.label()}}
+            {{form.purpose(class="form-control",placeholder="Why are these dues being levied on the user")}}</span>
+            
+            <br>
+            <span>
+              {{form.due_to_user.label()}}
+              {{form.due_to_user}}
+            </span>
+        </div>
+        <div class="modal-footer">
+            <hr>
+            {{form.submit(class="btn btn-md btn-block btn-primary")}}
+            <button type="button" class="btn btn-md btn-secondary" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+{% block script %}
+<script>
+</script>
+{% endblock %}

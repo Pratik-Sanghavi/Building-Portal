@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}
+    Members
+{% endblock %}
+{% block content %}
+{% if current_user.is_authenticated and current_user.admin_user %}
+    <div class="members-table">
+        <table class="table table-hover table-light">
+            <thead>
+                <tr>
+                    <!-- Your Columns HERE -->
+                    <th scope="col">Name</th>
+                    <th scope="col">Flat Number</th>
+                    <th scope="col">Floor</th>
+                    <th scope="col">Contact Number</th>
+                    <th scope="col">Email Address</th>
+                    <th scope="col">Administrator</th>
+                    <th scope="col">Approve Membership</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Your rows inside the table HERE: -->
+                {% for _,member in member_table.iterrows() %}
+                    <tr>
+                        <td>{{ member['Name'] }}</td>
+                        <td>{{ member['Flat_Number'] }}</td>
+                        <td>{{ member['Floor'] }}</td>
+                        <td>{{ member['Contact_Number'] }}</td>
+                        <td>{{ member['Email_Address'] }}</td>
+                        <td>{{ member['Administrator'] }}</td>
+                        {% if current_user.admin_user %}
+                            <td>
+                                <form action="" method="POST">
+                                    <button name="confirm" value="{{member['ID']}}" class="btn btn-sm btn-outline btn-success" style="margin-top:0rem">Make Member</button>
+                                    {% if member['Administrator'] == False %}
+                                        <button name="trash" value="{{member['ID']}}" class="btn btn-sm btn-outline" style="background-color: red; margin-top:0rem"><i class="far fa-trash-alt"></i></button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}
